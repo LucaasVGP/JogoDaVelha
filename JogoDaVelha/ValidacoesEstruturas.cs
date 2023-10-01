@@ -54,6 +54,23 @@ namespace JogoDaVelha
 			return true;
 		}
 
+		public static List<Movimento> MovimentosPossiveis(string[,] tabuleiro)
+		{
+			var movimentosDisponivel = new List<Movimento>();
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+
+					if (!(tabuleiro[i, j] == "X" || tabuleiro[i, j] == "O"))
+					{
+						movimentosDisponivel.Add(new Movimento { Linha = i + 1, Coluna = j + 1 });
+					}
+				}
+			}
+			return movimentosDisponivel;
+		}
+
 
 	}
 

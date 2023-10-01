@@ -11,6 +11,8 @@ var jogoEncerrado = false;
 
 
 IniciarJogo(tabuleiro, jogadorX, jogador0);
+
+
 ExibirTabuleiro(tabuleiro);
 if (!vitoria) ganhador = "Empate!";
 Console.WriteLine($"Resultado: {ganhador}");
@@ -18,8 +20,71 @@ Console.WriteLine($"Resultado: {ganhador}");
 
 void IniciarJogo(string[,] tabuleiro, Jogador x, Jogador o)
 {
-	while (!jogoEncerrado) PassarVez(new List<Jogador> { x, o });
+	Console.WriteLine("1 - Player X Maquina");
+	Console.WriteLine("2 - Player X Player");
+	Console.Write("Escolha uma modelidade: ");
+	var resp = Console.ReadLine();
+	if (resp != null && resp == "2")
+	{
+		while (!jogoEncerrado) PassarVez(new List<Jogador> { x, o });
+	}
+	else if (resp != null && resp == "1")
+	{
+		while (!jogoEncerrado) ExecutaMovimentoMaquina(tabuleiro, x, o);
+	}
+	else
+	{
+		Console.WriteLine("Opção Invalida");
+	}
 }
+
+
+
+void ExecutaMovimentoMaquina(string[,] tabuleiro, Jogador x, Jogador o)
+{
+	Random random = new Random();
+	var movimentoValido = false;
+	var movimento = new Movimento();
+	var podePassar = true;
+	if (!jogoEncerrado)
+	{
+		do
+		{
+			ExibirTabuleiro(tabuleiro);
+			Console.Write($"Jogada de {x.Nome}: ");
+			var jogada = Console.ReadLine();
+			var movimentoPlayer = ValidacaoEstruturas.CoverteMovimento(jogada!);
+			if (ValidacaoEstruturas.JogadaValida(jogada!, movimentoPlayer, tabuleiro))
+			{
+				ExecutaMovimento(movimentoPlayer!, tabuleiro, x);
+				Console.Clear();
+				ExibirTabuleiro(tabuleiro);
+				podePassar = true;
+			}
+			else
+			{
+				Console.WriteLine("MOVIMENTO INVALIDO!");
+				EsperarEfeito(3);
+				podePassar = false;
+
+			}
+			VerificaVitoria(tabuleiro);
+
+		}
+		while (!podePassar);
+	}
+	Console.Clear();
+	if (!jogoEncerrado)
+	{
+		EsperarEfeito(3);
+		var movimentosDisponiveis = ValidacaoEstruturas.MovimentosPossiveis(tabuleiro);
+		int indiceAleatorio = random.Next(0, movimentosDisponiveis.Count);
+		ExecutaMovimento(movimentosDisponiveis[indiceAleatorio], tabuleiro, o);
+		VerificaVitoria(tabuleiro);
+	}
+}
+
+
 void PassarVez(List<Jogador> jogadores)
 {
 
@@ -69,9 +134,7 @@ void EsperarEfeito(int segundos)
 }
 void ExibirTabuleiro(string[,] tabuleiro)
 {
-	//Exibindo como tabela
 	StringBuilder table = new StringBuilder();
-	//percorrer coluna e depois linha 
 	for (int i = 0; i < tabuleiro.GetLength(0); i++)
 	{
 		for (int j = 0; j < tabuleiro.GetLength(0); j++)
